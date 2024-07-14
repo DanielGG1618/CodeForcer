@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeForcer", "src\CodeForcer\CodeForcer.csproj", "{B7AB94B1-542D-40F2-86A1-CB9026C9E04F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6CD3B4BB-C078-416D-9FF9-C8F82846306C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B5B8EE0A-B15F-47BB-8AF5-397FD17B4F1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeForcer.Tests", "tests\CodeForcer.Tests\CodeForcer.Tests.csproj", "{9635CF0C-029F-4024-BC77-A919D37A2F2B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7AB94B1-542D-40F2-86A1-CB9026C9E04F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7AB94B1-542D-40F2-86A1-CB9026C9E04F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7AB94B1-542D-40F2-86A1-CB9026C9E04F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7AB94B1-542D-40F2-86A1-CB9026C9E04F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9635CF0C-029F-4024-BC77-A919D37A2F2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9635CF0C-029F-4024-BC77-A919D37A2F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9635CF0C-029F-4024-BC77-A919D37A2F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9635CF0C-029F-4024-BC77-A919D37A2F2B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B7AB94B1-542D-40F2-86A1-CB9026C9E04F} = {6CD3B4BB-C078-416D-9FF9-C8F82846306C}
+		{9635CF0C-029F-4024-BC77-A919D37A2F2B} = {B5B8EE0A-B15F-47BB-8AF5-397FD17B4F1D}
+	EndGlobalSection
+EndGlobal
