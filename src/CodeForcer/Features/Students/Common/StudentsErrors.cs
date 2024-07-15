@@ -1,4 +1,4 @@
-using CodeForcer.Features.Students.Domain;
+using CodeForcer.Features.Students.Common.Domain;
 
 namespace CodeForcer.Features.Students.Common;
 
@@ -8,5 +8,11 @@ public static class StudentsErrors
         Error.NotFound(
             code: $"{nameof(Student)}.{nameof(NotFound)}",
             description: "Student is not found"
+        );
+
+    public static Error InvalidEmail =>
+        Error.Validation(
+            code: $"{nameof(Student)}.{nameof(InvalidEmail)}",
+            description: "Provided email is not valid"
         );
 }

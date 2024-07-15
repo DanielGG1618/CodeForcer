@@ -1,4 +1,4 @@
-namespace CodeForcer.Features.Students;
+namespace CodeForcer.Common.Models;
 
 public abstract class EndpointBase : ICarterModule
 {

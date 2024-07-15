@@ -1,19 +1,20 @@
+using CodeForcer.Common.Models;
+using CodeForcer.Features.Students.Common.Domain;
 using CodeForcer.Features.Students.Common.Extensions;
 using CodeForcer.Features.Students.Common.Interfaces;
-using CodeForcer.Features.Students.Domain;
 
 namespace CodeForcer.Features.Students;
 
 public static class GetAllStudents
 {
-    public record Command : IRequest<ErrorOr<IEnumerable<Student>>>;
+    public record Query : IRequest<ErrorOr<IEnumerable<Student>>>;
 
     public class Endpoint : EndpointBase
     {
         public override void AddRoutes(IEndpointRouteBuilder app) => app.MapGet("students/",
             async (ISender mediatr) =>
             {
-                var command = new Command();
+                var command = new Query();
 
                 var result = await mediatr.Send(command);
 
@@ -24,13 +25,13 @@ public static class GetAllStudents
             });
     }
 
-    public class CommandHandler(
+    public class QueryHandler(
         IStudentsRepository studentsRepository
-    ) : IRequestHandler<Command, ErrorOr<IEnumerable<Student>>>
+    ) : IRequestHandler<Query, ErrorOr<IEnumerable<Student>>>
     {
         private readonly IStudentsRepository _studentsRepository = studentsRepository;
 
-        public async Task<ErrorOr<IEnumerable<Student>>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<IEnumerable<Student>>> Handle(Query command, CancellationToken cancellationToken)
         {
             var students = await _studentsRepository.GetAll();
 

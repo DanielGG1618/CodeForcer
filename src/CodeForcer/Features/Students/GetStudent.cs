@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CodeForcer.Common.Models;
 using CodeForcer.Features.Students.Common;
+using CodeForcer.Features.Students.Common.Domain;
 using CodeForcer.Features.Students.Common.Extensions;
 using CodeForcer.Features.Students.Common.Interfaces;
-using CodeForcer.Features.Students.Domain;
 
 namespace CodeForcer.Features.Students;
 

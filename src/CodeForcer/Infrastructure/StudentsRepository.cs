@@ -1,7 +1,7 @@
 using System.Data.Common;
 using System.Data.SQLite;
+using CodeForcer.Features.Students.Common.Domain;
 using CodeForcer.Features.Students.Common.Interfaces;
-using CodeForcer.Features.Students.Domain;
 
 namespace CodeForcer.Infrastructure;
 
@@ -43,14 +43,9 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
             new SQLiteParameter("@Email", email)
         );
 
-        if (await reader.ReadAsync() is false)
-            return null;
-
-        return new Student
-        {
-            Email = reader.GetString(0),
-            Handle = reader.GetString(1)
-        };
+        return await reader.ReadAsync() is true 
+            ? Student.Create(reader.GetString(0), reader.GetString(1)) 
+            : null;
     }
 
     public async Task<Student?> GetByHandle(string handle)
@@ -59,14 +54,9 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
             new SQLiteParameter("@Handle", handle)
         );
         
-        if (await reader.ReadAsync() is false)
-            return null;
-
-        return new Student
-        {
-            Email = reader.GetString(0),
-            Handle = reader.GetString(1)
-        };
+        return await reader.ReadAsync() is true 
+            ? Student.Create(reader.GetString(0), reader.GetString(1)) 
+            : null;
     }
 
     public async Task<IEnumerable<Student>> GetAll()
@@ -74,13 +64,9 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
         var reader = await ExecuteQuery("SELECT email, handle FROM students;");
         
         var students = new List<Student>();
-        
+
         while (await reader.ReadAsync())
-            students.Add(new Student
-            {
-                Email = reader.GetString(0),
-                Handle = reader.GetString(1)
-            });
+            students.Add(Student.Create(reader.GetString(0), reader.GetString(1)));
 
         return students;
     }

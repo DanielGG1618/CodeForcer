@@ -1,5 +1,5 @@
+using CodeForcer.Features.Students.Common.Domain;
 using CodeForcer.Features.Students.Common.Interfaces;
-using CodeForcer.Features.Students.Domain;
 
 namespace CodeForcer.Tests.Common.Models;
 

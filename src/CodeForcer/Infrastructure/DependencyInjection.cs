@@ -1,5 +1,4 @@
 using CodeForcer.Features.Students.Common.Interfaces;
-using CodeForcer.Features.Students.Domain;
 
 namespace CodeForcer.Infrastructure;
 

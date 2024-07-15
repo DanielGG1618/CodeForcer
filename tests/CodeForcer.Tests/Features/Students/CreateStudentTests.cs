@@ -1,3 +1,5 @@
+using CodeForcer.Contracts;
+
 namespace CodeForcer.Tests.Features.Students;
 
 public class CreateStudentTests(IntegrationTestWebAppFactory factory)
@@ -24,5 +26,3 @@ public class CreateStudentTests(IntegrationTestWebAppFactory factory)
         dbStudent.Should().BeEquivalentTo(student);
     }
 }
-
-public record CreateStudentRequest(string Email, string Handle);
