@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CodeForcer.Tests.Common.Models;
 
-public abstract class IntegrationTestBase : IClassFixture<IntegrationTestWebAppFactory>
+public abstract class IntegrationTestBase : IClassFixture<IntegrationTestWebAppFactory>, IAsyncDisposable
 {
     protected readonly HttpClient Client;
     protected readonly IStudentsRepository StudentsRepository;
@@ -12,7 +12,11 @@ public abstract class IntegrationTestBase : IClassFixture<IntegrationTestWebAppF
     {
         Client = factory.CreateClient();
 
-        var scope = factory.Services.CreateScope();
-        StudentsRepository = scope.ServiceProvider.GetRequiredService<IStudentsRepository>();
+        StudentsRepository = factory.Services.GetService<IStudentsRepository>()!;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await StudentsRepository.Clear();
     }
 }

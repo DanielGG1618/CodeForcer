@@ -9,15 +9,6 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<IApiMar
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder) =>
         builder.ConfigureServices(services => services
-            .AddScoped<IStudentsRepository, InMemoryStudentsRepository>()
+            .AddSingleton<IStudentsRepository, InMemoryStudentsRepository>()
         );
-
-    protected override void Dispose(bool disposing) => 
-        InMemoryStudentsRepository.Clear();
-
-    public override ValueTask DisposeAsync()
-    {
-        InMemoryStudentsRepository.Clear();
-        return ValueTask.CompletedTask;
-    }
 }

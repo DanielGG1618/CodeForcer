@@ -9,4 +9,6 @@ public interface IStudentsRepository
     Task<Student?> GetByEmail(string email);
     Task<Student?> GetByHandle(string handle);
     Task<IEnumerable<Student>> GetAll();
+
+    Task Clear();
 }

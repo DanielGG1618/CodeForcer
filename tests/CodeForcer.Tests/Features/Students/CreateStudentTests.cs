@@ -1,5 +1,3 @@
-using CodeForcer.Features.Students.Domain;
-
 namespace CodeForcer.Tests.Features.Students;
 
 public class CreateStudentTests(IntegrationTestWebAppFactory factory)

@@ -1,8 +1,12 @@
+using Xunit.Abstractions;
+
 namespace CodeForcer.Tests.Features.Students;
 
-public class GetAllStudentsTests(IntegrationTestWebAppFactory factory) :
+public class GetAllStudentsTests(IntegrationTestWebAppFactory factory, ITestOutputHelper testOutputHelper) :
     IntegrationTestBase(factory)
 {
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
+
     [Fact]
     public async Task ShouldReturnEmptyList_WhenNoStudents()
     {
@@ -23,6 +27,7 @@ public class GetAllStudentsTests(IntegrationTestWebAppFactory factory) :
     {
         //Arrange
         var students = Fakers.StudentsFaker.GenerateBetween(3, 52);
+        _testOutputHelper.WriteLine($"Сгенерировал {students.Count} студентов");
         
         foreach (var student in students)
             await StudentsRepository.Add(student);
@@ -34,6 +39,7 @@ public class GetAllStudentsTests(IntegrationTestWebAppFactory factory) :
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var responseStudents = await response.Content.ReadFromJsonAsync<List<StudentResponse>>();
+        _testOutputHelper.WriteLine($"Достал {responseStudents!.Count} студентов");
         responseStudents.Should().BeEquivalentTo(students);
     }
 }

@@ -85,6 +85,9 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
         return students;
     }
 
+    public async Task Clear() => 
+        await ExecuteNonQuery("DELETE FROM students;");
+
     private async Task ExecuteNonQuery(string commandText, params SQLiteParameter[] parameters)
     {
         await using var command = _connection.CreateCommand();
