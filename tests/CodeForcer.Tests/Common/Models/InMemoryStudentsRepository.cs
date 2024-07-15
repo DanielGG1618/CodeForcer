@@ -6,12 +6,12 @@ namespace CodeForcer.Tests.Common.Models;
 public class InMemoryStudentsRepository : IStudentsRepository
 {
     private readonly Dictionary<string, Student> _students = [];
-    
+
     public Task Add(Student student)
     {
         if (student.Email is null)
             throw new ArgumentNullException(nameof(student.Email));
-        
+
         _students.Add(student.Email, student);
         return Task.CompletedTask;
     }
@@ -22,8 +22,14 @@ public class InMemoryStudentsRepository : IStudentsRepository
     public Task<Student?> GetByHandle(string emailOrHandle) =>
         Task.FromResult(_students.Values.SingleOrDefault(s => s.Handle == emailOrHandle));
 
-    public Task<IEnumerable<Student>> GetAll() => 
+    public Task<IEnumerable<Student>> GetAll() =>
         Task.FromResult<IEnumerable<Student>>(_students.Values);
+
+    public Task UpdateByEmail(string email, Student student) =>
+        Task.FromResult(_students[email] = student);
+
+    public Task<bool> ExistsByEmail(string email) =>
+        Task.FromResult(_students.ContainsKey(email));
 
     public Task Clear()
     {

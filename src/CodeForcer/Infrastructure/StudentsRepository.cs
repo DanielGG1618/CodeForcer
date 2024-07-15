@@ -12,22 +12,22 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
     public StudentsRepository(string connectionString)
     {
         _connection = new(connectionString);
-        
+
         EnsureIsOpenAndCreated();
     }
 
     private void EnsureIsOpenAndCreated()
     {
         _connection.Open();
-        
+
         using var command = _connection.CreateCommand();
-        
+
         command.CommandText = """
                               CREATE TABLE IF NOT EXISTS students (
                                   email TEXT PRIMARY KEY,
                                   handle TEXT
                               );
-                              """;        
+                              """;
         command.ExecuteNonQuery();
     }
 
@@ -43,8 +43,8 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
             new SQLiteParameter("@Email", email)
         );
 
-        return await reader.ReadAsync() is true 
-            ? Student.Create(reader.GetString(0), reader.GetString(1)) 
+        return await reader.ReadAsync() is true
+            ? Student.Create(reader.GetString(0), reader.GetString(1))
             : null;
     }
 
@@ -53,16 +53,16 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
         var reader = await ExecuteQuery("SELECT email, handle FROM students WHERE handle = @Handle",
             new SQLiteParameter("@Handle", handle)
         );
-        
-        return await reader.ReadAsync() is true 
-            ? Student.Create(reader.GetString(0), reader.GetString(1)) 
+
+        return await reader.ReadAsync() is true
+            ? Student.Create(reader.GetString(0), reader.GetString(1))
             : null;
     }
 
     public async Task<IEnumerable<Student>> GetAll()
     {
         var reader = await ExecuteQuery("SELECT email, handle FROM students;");
-        
+
         var students = new List<Student>();
 
         while (await reader.ReadAsync())
@@ -71,33 +71,48 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
         return students;
     }
 
-    public async Task Clear() => 
+    public async Task UpdateByEmail(string email, Student student) =>
+        await ExecuteNonQuery("UPDATE students SET handle = @Handle WHERE email = @Email;",
+            new SQLiteParameter("@Email", student.Email),
+            new SQLiteParameter("@Handle", student.Handle)
+        );
+
+    public async Task<bool> ExistsByEmail(string email)
+    {
+        var reader = await ExecuteQuery("SELECT email FROM students WHERE email = @Email;",
+            new SQLiteParameter("@Email", email)
+        );
+
+        return await reader.ReadAsync();
+    }
+
+    public async Task Clear() =>
         await ExecuteNonQuery("DELETE FROM students;");
 
     private async Task ExecuteNonQuery(string commandText, params SQLiteParameter[] parameters)
     {
         await using var command = _connection.CreateCommand();
-        
+
         command.CommandText = commandText;
         command.Parameters.AddRange(parameters);
-        
+
         await command.ExecuteNonQueryAsync();
     }
 
     private async Task<DbDataReader> ExecuteQuery(string queryText, params SQLiteParameter[] parameters)
     {
         await using var command = _connection.CreateCommand();
-        
+
         command.CommandText = queryText;
         command.Parameters.AddRange(parameters);
-        
+
         return await command.ExecuteReaderAsync();
     }
-    
-    
-    public void Dispose() => 
+
+
+    public void Dispose() =>
         _connection.Dispose();
 
-    public async ValueTask DisposeAsync() => 
+    public async ValueTask DisposeAsync() =>
         await _connection.DisposeAsync();
 }

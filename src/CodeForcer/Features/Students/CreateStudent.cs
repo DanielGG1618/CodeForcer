@@ -16,7 +16,7 @@ public static class CreateStudent
             async (CreateStudentRequest request, ISender mediator) =>
             {
                 var command = new Command(request.Email, request.Handle);
-                
+
                 var result = await mediator.Send(command);
 
                 return result.Match(
@@ -30,13 +30,15 @@ public static class CreateStudent
         IStudentsRepository studentsRepository
     ) : IRequestHandler<Command, ErrorOr<Student>>
     {
+        private readonly IStudentsRepository _studentsRepository = studentsRepository;
+
         public Task<ErrorOr<Student>> Handle(Command command, CancellationToken cancellationToken)
         {
             var (email, handle) = command;
 
             var errorOrStudent = Student.SafeCreate(email, handle)
-                .ThenDoAsync(studentsRepository.Add);
-            
+                .ThenDoAsync(_studentsRepository.Add);
+
             return errorOrStudent;
         }
     }

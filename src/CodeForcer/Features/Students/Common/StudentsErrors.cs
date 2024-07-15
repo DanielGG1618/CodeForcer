@@ -15,4 +15,16 @@ public static class StudentsErrors
             code: $"{nameof(Student)}.{nameof(InvalidEmail)}",
             description: "Provided email is not valid"
         );
+
+    public static Error EmailsDoesNotMatch =>
+        Error.Validation(
+            code: $"{nameof(Student)}.{nameof(EmailsDoesNotMatch)}",
+            description: "Email in the request body does not match the email in the route"
+        );
+
+    public static Error HandlesDoesNotMatch =>
+        Error.Validation(
+            code: $"{nameof(Student)}.{nameof(EmailsDoesNotMatch)}",
+            description: "Handle in the request body does not match the handle in the route"
+        );
 }
