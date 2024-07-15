@@ -1,3 +1,6 @@
+using CodeForcer.Features.Students.Common;
+using Microsoft.AspNetCore.Mvc;
+
 namespace CodeForcer.Tests.Features.Students;
 
 public class UpdateOrCreateStudentTests(IntegrationTestWebAppFactory factory)
@@ -60,6 +63,30 @@ public class UpdateOrCreateStudentTests(IntegrationTestWebAppFactory factory)
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        problemDetails?.Title.Should().Be(StudentsErrors.EmailsDoesNotMatch.Description);
+
+        var dbStudent = await StudentsRepository.GetByEmail(student.Email!);
+        dbStudent.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ShouldReturnBadRequest_WhenEmailIsInvalid()
+    {
+        // Arrange
+        var student = Fakers.StudentsFaker.Clone().RuleFor(s => s.Email, () => "invalidEmail").Generate();
+
+        var request = new UpdateOrCreateStudentRequest(student.Email!, student.Handle);
+
+        //Act
+        var response = await Client.PutAsJsonAsync($"students/{student.Email}", request);
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        problemDetails?.Title.Should().Be(StudentsErrors.InvalidEmail.Description);
 
         var dbStudent = await StudentsRepository.GetByEmail(student.Email!);
         dbStudent.Should().BeNull();
