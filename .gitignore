@@ -30,8 +30,10 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
 !/.idea/
 !/global.json
 !/CodeForcer.sln.DotSettings.user
-!/src/CodeForcer/appsettings.json
-!/src/CodeForcer/appsettings.Development.json
+
+appsettings.json
+appsettings.Development.json
