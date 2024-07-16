@@ -77,6 +77,23 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
             new SQLiteParameter("@Handle", student.Handle)
         );
 
+    public async Task UpdateByHandle(string handle, Student student) =>
+        await ExecuteNonQuery("UPDATE students SET email = @Email WHERE handle = @Handle;",
+            new SQLiteParameter("@Email", student.Email),
+            new SQLiteParameter("@Handle", student.Handle)
+        );
+
+    public async Task<bool> DeleteByEmail(string email)
+    {
+        if (!await ExistsByEmail(email))
+            return false;
+
+        await ExecuteNonQuery("DELETE FROM students WHERE email = @Email;",
+            new SQLiteParameter("@Email", email)
+        );
+        return true;
+    }
+
     public async Task<bool> ExistsByEmail(string email)
     {
         var reader = await ExecuteQuery("SELECT email FROM students WHERE email = @Email;",

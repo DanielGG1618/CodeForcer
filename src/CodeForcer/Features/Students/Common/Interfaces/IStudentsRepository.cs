@@ -12,6 +12,8 @@ public interface IStudentsRepository
 
     Task UpdateByEmail(string email, Student student);
 
+    Task<bool> DeleteByEmail(string email);
+
     Task<bool> ExistsByEmail(string email);
 
     Task Clear();

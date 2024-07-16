@@ -28,6 +28,9 @@ public class InMemoryStudentsRepository : IStudentsRepository
     public Task UpdateByEmail(string email, Student student) =>
         Task.FromResult(_students[email] = student);
 
+    public Task<bool> DeleteByEmail(string email) =>
+        Task.FromResult(_students.Remove(email));
+
     public Task<bool> ExistsByEmail(string email) =>
         Task.FromResult(_students.ContainsKey(email));
 
