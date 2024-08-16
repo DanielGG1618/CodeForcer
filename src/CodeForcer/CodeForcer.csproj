@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -13,6 +13,10 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
         <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CodeForcer.ServiceDefaults\CodeForcer.ServiceDefaults.csproj"/>
     </ItemGroup>
 
 </Project>
