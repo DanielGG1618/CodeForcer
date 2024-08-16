@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\CodeForcer\CodeForcer.csproj" />
+        <ProjectReference Include="..\..\src\CodeForcer.Backend\CodeForcer.Backend.csproj"/>
     </ItemGroup>
 
 </Project>

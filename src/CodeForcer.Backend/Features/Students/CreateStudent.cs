@@ -23,7 +23,8 @@ public static class CreateStudent
                     student => Created($"student/{student.Email}", student.ToResponse()),
                     errors => Problem(errors)
                 );
-            });
+            }
+        );
     }
 
     public class CommandHandler(

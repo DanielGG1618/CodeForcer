@@ -28,7 +28,8 @@ public static class UpdateOrCreateStudent
                         : Created($"students/{email}", student.ToResponse()),
                     errors => Problem(errors)
                 );
-            });
+            }
+        );
     }
 
     public class Handler(

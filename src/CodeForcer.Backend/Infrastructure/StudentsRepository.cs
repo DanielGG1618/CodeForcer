@@ -23,11 +23,11 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
         using var command = _connection.CreateCommand();
 
         command.CommandText = """
-                              CREATE TABLE IF NOT EXISTS students (
-                                  email TEXT PRIMARY KEY,
-                                  handle TEXT
-                              );
-                              """;
+        CREATE TABLE IF NOT EXISTS students (
+            email TEXT PRIMARY KEY,
+            handle TEXT
+        );
+        """;
         command.ExecuteNonQuery();
     }
 
@@ -125,7 +125,6 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
 
         return await command.ExecuteReaderAsync();
     }
-
 
     public void Dispose() =>
         _connection.Dispose();

@@ -4,7 +4,7 @@ namespace CodeForcer.Features.Students.Common.Domain;
 
 public class Student
 {
-    public string? Email { get; private init; } 
+    public string? Email { get; private init; }
     public string Handle { get; private init; }
 
     public static Student Create(string email, string handle) =>
@@ -16,7 +16,7 @@ public class Student
         new EmailAddressAttribute().IsValid(email)
             ? new Student(email, handle)
             : StudentsErrors.InvalidEmail;
-    
+
     private Student(string email, string handle) =>
         (Email, Handle) = (email, handle);
 }

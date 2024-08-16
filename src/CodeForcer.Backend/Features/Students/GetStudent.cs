@@ -24,7 +24,8 @@ public static class GetStudent
                     student => Ok(student.ToResponse()),
                     errors => Problem(errors)
                 );
-            });
+            }
+        );
     }
 
     public class CommandHandler(
@@ -32,17 +33,17 @@ public static class GetStudent
     ) : IRequestHandler<Command, ErrorOr<Student>>
     {
         private readonly IStudentsRepository _studentsRepository = studentsRepository;
-        
+
         public async Task<ErrorOr<Student>> Handle(Command command, CancellationToken cancellationToken)
         {
             var emailOrHandle = command.EmailOrHandle;
-            
+
             var student = new EmailAddressAttribute().IsValid(emailOrHandle)
                 ? await _studentsRepository.GetByEmail(emailOrHandle)
                 : await _studentsRepository.GetByHandle(emailOrHandle);
 
-            return student is null 
-                ? StudentsErrors.NotFound 
+            return student is null
+                ? StudentsErrors.NotFound
                 : student;
         }
     }

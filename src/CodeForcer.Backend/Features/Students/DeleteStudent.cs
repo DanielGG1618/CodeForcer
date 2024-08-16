@@ -21,7 +21,8 @@ public static class DeleteStudent
                     _ => NoContent(),
                     errors => Problem(errors)
                 );
-            });
+            }
+        );
     }
 
     public sealed class Handler(

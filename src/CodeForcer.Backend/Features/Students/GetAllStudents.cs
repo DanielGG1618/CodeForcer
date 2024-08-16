@@ -22,7 +22,8 @@ public static class GetAllStudents
                     students => Ok(students.Select(s => s.ToResponse())),
                     errors => Problem(errors)
                 );
-            });
+            }
+        );
     }
 
     public class QueryHandler(
@@ -31,11 +32,7 @@ public static class GetAllStudents
     {
         private readonly IStudentsRepository _studentsRepository = studentsRepository;
 
-        public async Task<ErrorOr<IEnumerable<Student>>> Handle(Query command, CancellationToken cancellationToken)
-        {
-            var students = await _studentsRepository.GetAll();
-
-            return students.ToErrorOr();
-        }
+        public async Task<ErrorOr<IEnumerable<Student>>> Handle(Query command, CancellationToken cancellationToken) =>
+            (await _studentsRepository.GetAll()).ToErrorOr();
     }
 }
