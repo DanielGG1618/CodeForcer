@@ -1,5 +1,5 @@
-using CodeForcer.Features.Students.Common.Domain;
-using CodeForcer.Features.Students.Common.Interfaces;
+using CodeForcer.Backend.Features.Students.Common.Interfaces;
+using CodeForcer.Backend.Features.Students.Common.Models;
 
 namespace CodeForcer.Tests.Common.Models;
 
@@ -16,23 +16,33 @@ public class InMemoryStudentsRepository : IStudentsRepository
         return Task.CompletedTask;
     }
 
-    public Task<Student?> GetByEmail(string email) =>
+    public Task<Student?> GetByEmail(Email email) =>
         Task.FromResult(_students.GetValueOrDefault(email));
 
     public Task<Student?> GetByHandle(string emailOrHandle) =>
         Task.FromResult(_students.Values.SingleOrDefault(s => s.Handle == emailOrHandle));
 
-    public Task<IEnumerable<Student>> GetAll() =>
-        Task.FromResult<IEnumerable<Student>>(_students.Values);
+    public Task<List<Student>> GetAll() =>
+        Task.FromResult(_students.Values.ToList());
 
-    public Task UpdateByEmail(string email, Student student) =>
+    public Task UpdateByEmail(Email email, Student student) =>
         Task.FromResult(_students[email] = student);
 
-    public Task<bool> DeleteByEmail(string email) =>
+    public Task UpdateByHandle(string handle, Student student)
+    {
+        var email = _students.Values.Single(s => s.Handle == handle).Email!;
+        _students[email] = student;
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> DeleteByEmail(Email email) =>
         Task.FromResult(_students.Remove(email));
 
-    public Task<bool> ExistsByEmail(string email) =>
+    public Task<bool> ExistsByEmail(Email email) =>
         Task.FromResult(_students.ContainsKey(email));
+
+    public Task<bool> ExistsByHandle(string handle) =>
+        Task.FromResult(_students.Values.Any(s => s.Handle == handle));
 
     public Task Clear()
     {

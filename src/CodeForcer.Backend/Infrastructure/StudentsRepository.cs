@@ -1,9 +1,9 @@
 using System.Data.Common;
 using System.Data.SQLite;
-using CodeForcer.Features.Students.Common.Domain;
-using CodeForcer.Features.Students.Common.Interfaces;
+using CodeForcer.Backend.Features.Students.Common.Interfaces;
+using CodeForcer.Backend.Features.Students.Common.Models;
 
-namespace CodeForcer.Infrastructure;
+namespace CodeForcer.Backend.Infrastructure;
 
 public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyncDisposable
 {
@@ -37,14 +37,14 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
             new SQLiteParameter("@Handle", student.Handle)
         );
 
-    public async Task<Student?> GetByEmail(string email)
+    public async Task<Student?> GetByEmail(Email email)
     {
         var reader = await ExecuteQuery("SELECT email, handle FROM students WHERE email = @Email;",
             new SQLiteParameter("@Email", email)
         );
 
         return await reader.ReadAsync() is true
-            ? Student.Create(reader.GetString(0), reader.GetString(1))
+            ? new Student(Email.Create(reader.GetString(0)), reader.GetString(1))
             : null;
     }
 
@@ -55,23 +55,23 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
         );
 
         return await reader.ReadAsync() is true
-            ? Student.Create(reader.GetString(0), reader.GetString(1))
+            ? new Student(Email.Create(reader.GetString(0)), reader.GetString(1))
             : null;
     }
 
-    public async Task<IEnumerable<Student>> GetAll()
+    public async Task<List<Student>> GetAll()
     {
         var reader = await ExecuteQuery("SELECT email, handle FROM students;");
 
         var students = new List<Student>();
 
         while (await reader.ReadAsync())
-            students.Add(Student.Create(reader.GetString(0), reader.GetString(1)));
+            students.Add(new Student(Email.Create(reader.GetString(0)), reader.GetString(1)));
 
         return students;
     }
 
-    public async Task UpdateByEmail(string email, Student student) =>
+    public async Task UpdateByEmail(Email email, Student student) =>
         await ExecuteNonQuery("UPDATE students SET handle = @Handle WHERE email = @Email;",
             new SQLiteParameter("@Email", student.Email),
             new SQLiteParameter("@Handle", student.Handle)
@@ -83,7 +83,7 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
             new SQLiteParameter("@Handle", student.Handle)
         );
 
-    public async Task<bool> DeleteByEmail(string email)
+    public async Task<bool> DeleteByEmail(Email email)
     {
         if (!await ExistsByEmail(email))
             return false;
@@ -94,10 +94,19 @@ public sealed class StudentsRepository : IStudentsRepository, IDisposable, IAsyn
         return true;
     }
 
-    public async Task<bool> ExistsByEmail(string email)
+    public async Task<bool> ExistsByEmail(Email email)
     {
         var reader = await ExecuteQuery("SELECT email FROM students WHERE email = @Email;",
             new SQLiteParameter("@Email", email)
+        );
+
+        return await reader.ReadAsync();
+    }
+
+    public async Task<bool> ExistsByHandle(string handle)
+    {
+        var reader = await ExecuteQuery("SELECT handle FROM students WHERE handle = @Handle;",
+            new SQLiteParameter("@Handle", handle)
         );
 
         return await reader.ReadAsync();

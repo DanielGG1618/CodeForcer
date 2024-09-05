@@ -1,4 +1,4 @@
-﻿using CodeForcer.Contracts;
+﻿using CodeForcer.Tests.Features.Students.Common;
 
 namespace CodeForcer.Tests.Features.Students;
 
@@ -9,7 +9,7 @@ public class GetStudentTests(IntegrationTestWebAppFactory factory)
     public async Task ShouldReturn404NotFound_WhenGetByEmailStudentDoesNotExist()
     {
         //Arrange
-        var student = Fakers.StudentsFaker.Generate();
+        var student = StudentData.Faker.Generate();
 
         //Act
         var response = await Client.GetAsync($"/students/{student.Email}");
@@ -22,7 +22,7 @@ public class GetStudentTests(IntegrationTestWebAppFactory factory)
     public async Task ShouldReturn404NotFound_WhenGetByHandleStudentDoesNotExist()
     {
         //Arrange
-        var student = Fakers.StudentsFaker.Generate();
+        var student = StudentData.Faker.Generate();
 
         //Act
         var response = await Client.GetAsync($"/students/{student.Handle}");
@@ -35,8 +35,8 @@ public class GetStudentTests(IntegrationTestWebAppFactory factory)
     public async Task ShouldReturnStudent_WhenGetByEmailStudentExists()
     {
         //Arrange
-        var student = Fakers.StudentsFaker.Generate();
-        await StudentsRepository.Add(student);
+        var student = StudentData.Faker.Generate();
+        await StudentsRepository.Add(student.ToDomain());
 
         //Act
         var response = await Client.GetAsync($"/students/{student.Email}");
@@ -44,7 +44,7 @@ public class GetStudentTests(IntegrationTestWebAppFactory factory)
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseStudent = await response.Content.ReadFromJsonAsync<StudentResponse>();
+        var responseStudent = await response.Content.ReadFromJsonAsync<StudentData>();
         responseStudent.Should().BeEquivalentTo(student);
     }
 
@@ -52,8 +52,8 @@ public class GetStudentTests(IntegrationTestWebAppFactory factory)
     public async Task ShouldReturnStudent_WhenGetByHandleStudentExists()
     {
         //Arrange
-        var student = Fakers.StudentsFaker.Generate();
-        await StudentsRepository.Add(student);
+        var student = StudentData.Faker.Generate();
+        await StudentsRepository.Add(student.ToDomain());
 
         //Act
         var response = await Client.GetAsync($"/students/{student.Handle}");
@@ -61,7 +61,7 @@ public class GetStudentTests(IntegrationTestWebAppFactory factory)
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseStudent = await response.Content.ReadFromJsonAsync<StudentResponse>();
+        var responseStudent = await response.Content.ReadFromJsonAsync<StudentData>();
         responseStudent.Should().BeEquivalentTo(student);
     }
 }

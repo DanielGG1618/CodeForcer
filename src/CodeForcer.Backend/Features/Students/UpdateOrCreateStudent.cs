@@ -1,62 +1,55 @@
-using CodeForcer.Common.Models;
-using CodeForcer.Features.Students.Common;
-using CodeForcer.Features.Students.Common.Domain;
-using CodeForcer.Features.Students.Common.Extensions;
-using CodeForcer.Features.Students.Common.Interfaces;
+using AutoApiGen.Attributes;
+using CodeForcer.Backend.Features.Students.Common;
+using CodeForcer.Backend.Features.Students.Common.Interfaces;
+using CodeForcer.Backend.Features.Students.Common.Models;
 
-namespace CodeForcer.Features.Students;
+namespace CodeForcer.Backend.Features.Students;
 
 public static class UpdateOrCreateStudent
 {
-    public record Command(string Email, string Handle) : IRequest<ErrorOr<Student?>>;
-
-    public class Endpoint : EndpointBase
-    {
-        public override void AddRoutes(IEndpointRouteBuilder app) => app.MapPut("students/{email}",
-            async (string email, UpdateOrCreateStudentRequest request, ISender mediatr) =>
-            {
-                if (email != request.Email)
-                    return Problem(StudentsErrors.EmailsDoesNotMatch);
-
-                var command = new Command(request.Email, request.Handle);
-
-                var result = await mediatr.Send(command);
-
-                return result.Match(
-                    student => student is null
-                        ? NoContent()
-                        : Created($"students/{email}", student.ToResponse()),
-                    errors => Problem(errors)
-                );
-            }
-        );
-    }
+    [PutEndpoint("students/{EmailOrHandle}",
+        SuccessCode = StatusCodes.Status204NoContent,
+        ErrorCode = StatusCodes.Status400BadRequest
+    )]
+    public record Command(string EmailOrHandle, string Email, string Handle) : ICommand<ErrorOr<Success>>;
 
     public class Handler(
         IStudentsRepository studentsRepository
-    ) : IRequestHandler<Command, ErrorOr<Student?>>
+    ) : ICommandHandler<Command, ErrorOr<Success>>
     {
         private readonly IStudentsRepository _studentsRepository = studentsRepository;
 
-        public async Task<ErrorOr<Student?>> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<ErrorOr<Success>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var (email, handle) = request;
+            var (emailOrHandle, emailStr, handle) = request;
 
-            if (await _studentsRepository.ExistsByEmail(email))
+            if (!Email.IsValid(emailStr, out var email))
+                return StudentsErrors.InvalidEmail;
+
+            var student = new Student(email, handle);
+
+            if (Email.IsValid(emailOrHandle))
             {
-                var errorOrNull = await Student.SafeCreate(email, handle)
-                    .ThenDoAsync(s => _studentsRepository.UpdateByEmail(email, s))
-                    .Then(_ => (Student?)null);
+                if (emailOrHandle != emailStr)
+                    return StudentsErrors.EmailsDoesNotMatch;
 
-                return errorOrNull;
+                if (await _studentsRepository.ExistsByEmail(email))
+                    await _studentsRepository.UpdateByEmail(email, student);
+                else
+                    await _studentsRepository.Add(student);
+            }
+            else
+            {
+                if (emailOrHandle != handle)
+                    return StudentsErrors.HandlesDoesNotMatch;
+
+                if (await _studentsRepository.ExistsByHandle(handle))
+                    await _studentsRepository.UpdateByHandle(handle, student);
+                else
+                    await _studentsRepository.Add(student);
             }
 
-            var errorOrStudent = await Student.SafeCreate(email, handle)
-                .ThenDoAsync(_studentsRepository.Add);
-
-            return errorOrStudent!;
+            return Result.Success;
         }
     }
 }
-
-public record UpdateOrCreateStudentRequest(string Email, string Handle);

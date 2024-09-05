@@ -1,20 +1,21 @@
-using CodeForcer.Features.Students.Common.Domain;
+using CodeForcer.Backend.Features.Students.Common.Models;
 
-namespace CodeForcer.Features.Students.Common.Interfaces;
+namespace CodeForcer.Backend.Features.Students.Common.Interfaces;
 
 public interface IStudentsRepository
 {
     Task Add(Student student);
 
-    Task<Student?> GetByEmail(string email);
+    Task<Student?> GetByEmail(Email email);
     Task<Student?> GetByHandle(string handle);
-    Task<IEnumerable<Student>> GetAll();
+    Task<List<Student>> GetAll();
 
-    Task UpdateByEmail(string email, Student student);
+    Task UpdateByEmail(Email email, Student student);
+    Task UpdateByHandle(string handle, Student student);
 
-    Task<bool> DeleteByEmail(string email);
+    Task<bool> DeleteByEmail(Email email);
 
-    Task<bool> ExistsByEmail(string email);
+    Task<bool> ExistsByEmail(Email email);
 
-    Task Clear();
+    Task<bool> ExistsByHandle(string handle);
 }

@@ -1,29 +1,17 @@
-using CodeForcer.Common.Models;
-using CodeForcer.Features.Students.Common;
-using CodeForcer.Features.Students.Common.Interfaces;
+using AutoApiGen.Attributes;
+using CodeForcer.Backend.Features.Students.Common;
+using CodeForcer.Backend.Features.Students.Common.Interfaces;
+using CodeForcer.Backend.Features.Students.Common.Models;
 
-namespace CodeForcer.Features.Students;
+namespace CodeForcer.Backend.Features.Students;
 
 public static class DeleteStudent
 {
+    [DeleteEndpoint("students/{Email}",
+        SuccessCode = StatusCodes.Status204NoContent,
+        ErrorCode = StatusCodes.Status404NotFound
+    )]
     public record Command(string Email) : IRequest<ErrorOr<Deleted>>;
-
-    public sealed class Endpoint : EndpointBase
-    {
-        public override void AddRoutes(IEndpointRouteBuilder app) => app.MapDelete("students/{email}",
-            async (string email, ISender mediator) =>
-            {
-                var command = new Command(email);
-
-                var result = await mediator.Send(command);
-
-                return result.Match(
-                    _ => NoContent(),
-                    errors => Problem(errors)
-                );
-            }
-        );
-    }
 
     public sealed class Handler(
         IStudentsRepository studentsRepository
@@ -31,15 +19,14 @@ public static class DeleteStudent
     {
         private readonly IStudentsRepository _studentsRepository = studentsRepository;
 
-        public async Task<ErrorOr<Deleted>> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<ErrorOr<Deleted>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var email = request.Email;
+            if (!Email.IsValid(request.Email, out var email))
+                return StudentsErrors.InvalidEmail;
 
             var deleted = await _studentsRepository.DeleteByEmail(email);
 
-            return deleted
-                ? Result.Deleted
-                : StudentsErrors.NotFound;
+            return deleted ? Result.Deleted : StudentsErrors.NotFound;
         }
     }
 }

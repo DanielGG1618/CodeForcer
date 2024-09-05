@@ -1,3 +1,5 @@
+using CodeForcer.Tests.Features.Students.Common;
+
 namespace CodeForcer.Tests.Features.Students;
 
 public class DeleteStudentTests(IntegrationTestWebAppFactory factory)
@@ -7,8 +9,7 @@ public class DeleteStudentTests(IntegrationTestWebAppFactory factory)
     public async Task ShouldDelete_WhenStudentExists()
     {
         //Arrange
-        var student = Fakers.StudentsFaker.Generate();
-
+        var student = StudentData.Faker.Generate().ToDomain();
         await StudentsRepository.Add(student);
 
         //Act
@@ -17,7 +18,7 @@ public class DeleteStudentTests(IntegrationTestWebAppFactory factory)
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var studentExists = await StudentsRepository.ExistsByEmail(student.Email!);
+        var studentExists = await StudentsRepository.ExistsByEmail(student.Email!.Value);
         studentExists.Should().BeFalse();
     }
 
@@ -25,7 +26,7 @@ public class DeleteStudentTests(IntegrationTestWebAppFactory factory)
     public async Task ShouldReturnNotFound_WhenStudentDoesNotExist()
     {
         //Arrange
-        var student = Fakers.StudentsFaker.Generate();
+        var student = StudentData.Faker.Generate();
 
         //Act 
         var response = await Client.DeleteAsync($"students/{student.Email}");

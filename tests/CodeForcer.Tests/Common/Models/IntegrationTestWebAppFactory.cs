@@ -1,4 +1,5 @@
-﻿using CodeForcer.Features.Students.Common.Interfaces;
+﻿using CodeForcer.Backend;
+using CodeForcer.Backend.Features.Students.Common.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

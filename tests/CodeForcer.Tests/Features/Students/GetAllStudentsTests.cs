@@ -1,13 +1,11 @@
-using CodeForcer.Contracts;
+using CodeForcer.Tests.Features.Students.Common;
 using Xunit.Abstractions;
 
 namespace CodeForcer.Tests.Features.Students;
 
-public class GetAllStudentsTests(IntegrationTestWebAppFactory factory, ITestOutputHelper testOutputHelper)
+public class GetAllStudentsTests(IntegrationTestWebAppFactory factory)
     : IntegrationTestBase(factory)
 {
-    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
-
     [Fact]
     public async Task ShouldReturnEmptyList_WhenNoStudents()
     {
@@ -19,7 +17,7 @@ public class GetAllStudentsTests(IntegrationTestWebAppFactory factory, ITestOutp
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseStudents = await response.Content.ReadFromJsonAsync<List<StudentResponse>>();
+        var responseStudents = await response.Content.ReadFromJsonAsync<List<StudentData>>();
         responseStudents.Should().BeEmpty();
     }
 
@@ -27,10 +25,9 @@ public class GetAllStudentsTests(IntegrationTestWebAppFactory factory, ITestOutp
     public async Task ShouldReturnStudents_WhenThereAreStudents()
     {
         //Arrange
-        var students = Fakers.StudentsFaker.GenerateBetween(3, 52);
-        _testOutputHelper.WriteLine($"Сгенерировал {students.Count} студентов");
+        var studentDatas = StudentData.Faker.GenerateBetween(3, 52);
 
-        foreach (var student in students)
+        foreach (var student in studentDatas.ToDomain())
             await StudentsRepository.Add(student);
 
         //Act
@@ -39,8 +36,7 @@ public class GetAllStudentsTests(IntegrationTestWebAppFactory factory, ITestOutp
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseStudents = await response.Content.ReadFromJsonAsync<List<StudentResponse>>();
-        _testOutputHelper.WriteLine($"Достал {responseStudents!.Count} студентов");
-        responseStudents.Should().BeEquivalentTo(students);
+        var responseStudents = await response.Content.ReadFromJsonAsync<List<StudentData>>();
+        responseStudents.Should().BeEquivalentTo(studentDatas);
     }
 }

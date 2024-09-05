@@ -1,5 +1,4 @@
-using System.Reflection;
-using CodeForcer.Infrastructure;
+using CodeForcer.Backend.Infrastructure;
 using CodeForcer.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,9 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddCarter();
     builder.Services.AddControllers();
-    builder.Services.AddMediatR(cfg =>
-        cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())
-    );
+    builder.Services.AddMediator();
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();

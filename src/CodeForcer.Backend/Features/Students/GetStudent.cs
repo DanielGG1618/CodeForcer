@@ -1,45 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
-using CodeForcer.Common.Models;
-using CodeForcer.Features.Students.Common;
-using CodeForcer.Features.Students.Common.Domain;
-using CodeForcer.Features.Students.Common.Extensions;
-using CodeForcer.Features.Students.Common.Interfaces;
+﻿using AutoApiGen.Attributes;
+using CodeForcer.Backend.Features.Students.Common;
+using CodeForcer.Backend.Features.Students.Common.Interfaces;
+using CodeForcer.Backend.Features.Students.Common.Models;
 
-namespace CodeForcer.Features.Students;
+namespace CodeForcer.Backend.Features.Students;
 
 public static class GetStudent
 {
-    public record Command(string EmailOrHandle) : IRequest<ErrorOr<Student>>;
-
-    public class Endpoint : EndpointBase
-    {
-        public override void AddRoutes(IEndpointRouteBuilder app) => app.MapGet("students/{emailOrHandle}",
-            async (string emailOrHandle, ISender mediatr) =>
-            {
-                var command = new Command(emailOrHandle);
-
-                var result = await mediatr.Send(command);
-
-                return result.Match(
-                    student => Ok(student.ToResponse()),
-                    errors => Problem(errors)
-                );
-            }
-        );
-    }
+    [GetEndpoint("students/{EmailOrHandle}",
+        ErrorCode = StatusCodes.Status404NotFound
+    )]
+    public record Query(string EmailOrHandle) : IRequest<ErrorOr<Student>>;
 
     public class CommandHandler(
         IStudentsRepository studentsRepository
-    ) : IRequestHandler<Command, ErrorOr<Student>>
+    ) : IRequestHandler<Query, ErrorOr<Student>>
     {
         private readonly IStudentsRepository _studentsRepository = studentsRepository;
 
-        public async Task<ErrorOr<Student>> Handle(Command command, CancellationToken cancellationToken)
+        public async ValueTask<ErrorOr<Student>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var emailOrHandle = command.EmailOrHandle;
+            var emailOrHandle = query.EmailOrHandle;
 
-            var student = new EmailAddressAttribute().IsValid(emailOrHandle)
-                ? await _studentsRepository.GetByEmail(emailOrHandle)
+            var student = Email.IsValid(emailOrHandle, out var email)
+                ? await _studentsRepository.GetByEmail(email)
                 : await _studentsRepository.GetByHandle(emailOrHandle);
 
             return student is null
