@@ -1,4 +1,4 @@
-﻿using CodeForcer.Backend.Features.Students.Common.Interfaces;
+﻿using CodeForcer.Features.Students.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CodeForcer.Tests.Common.Models;

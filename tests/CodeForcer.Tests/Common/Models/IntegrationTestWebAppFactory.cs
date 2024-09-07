@@ -1,5 +1,5 @@
-﻿using CodeForcer.Backend;
-using CodeForcer.Backend.Features.Students.Common.Interfaces;
+﻿using CodeForcer;
+using CodeForcer.Features.Students.Common.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,5 +11,6 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<IApiMar
     protected override void ConfigureWebHost(IWebHostBuilder builder) =>
         builder.ConfigureServices(services => services
             .AddSingleton<IStudentsRepository, InMemoryStudentsRepository>()
+            .AddSingleton<IHandleValidator, FakeHandleValidator>()
         );
 }

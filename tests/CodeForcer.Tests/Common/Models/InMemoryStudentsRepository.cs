@@ -1,5 +1,5 @@
-using CodeForcer.Backend.Features.Students.Common.Interfaces;
-using CodeForcer.Backend.Features.Students.Common.Models;
+using CodeForcer.Features.Students.Common.Interfaces;
+using CodeForcer.Features.Students.Common.Models;
 
 namespace CodeForcer.Tests.Common.Models;
 
@@ -13,6 +13,14 @@ public class InMemoryStudentsRepository : IStudentsRepository
             throw new ArgumentNullException(nameof(student.Email));
 
         _students.Add(student.Email, student);
+        return Task.CompletedTask;
+    }
+
+    public Task AddRange(IEnumerable<Student> students)
+    {
+        foreach (var student in students)
+            Add(student);
+
         return Task.CompletedTask;
     }
 

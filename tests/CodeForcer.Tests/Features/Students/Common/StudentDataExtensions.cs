@@ -1,4 +1,4 @@
-using CodeForcer.Backend.Features.Students.Common.Models;
+using CodeForcer.Features.Students.Common.Models;
 
 namespace CodeForcer.Tests.Features.Students.Common;
 

@@ -1,5 +1,5 @@
-using CodeForcer.Backend.Features.Students.Common;
-using CodeForcer.Backend.Features.Students.Common.Models;
+using CodeForcer.Features.Students.Common;
+using CodeForcer.Features.Students.Common.Models;
 using CodeForcer.Tests.Features.Students.Common;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,7 +49,7 @@ public class UpdateOrCreateStudentTests(IntegrationTestWebAppFactory factory)
     }
 
     [Fact]
-    public async Task ShouldReturnBadRequest_WhenEmailsDoNotMatch()
+    public async Task ShouldReturnBadRequestWithProblemDetails_WhenEmailsBothAreValidButDoNotMatch()
     {
         // Arrange
         var studentData = StudentData.Faker.Generate();
@@ -57,7 +57,7 @@ public class UpdateOrCreateStudentTests(IntegrationTestWebAppFactory factory)
         var request = new { studentData.Email, studentData.Handle };
 
         //Act
-        var response = await Client.PutAsJsonAsync($"students/{studentData.Email}-invalid", request);
+        var response = await Client.PutAsJsonAsync($"students/some.other.{studentData.Email}", request);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -70,7 +70,28 @@ public class UpdateOrCreateStudentTests(IntegrationTestWebAppFactory factory)
     }
 
     [Fact]
-    public async Task ShouldReturnBadRequest_WhenEmailIsInvalid()
+    public async Task ShouldReturnBadRequestWithProblemDetails_WhenHandlesBothAreValidButDoNotMatch()
+    {
+        // Arrange
+        var studentData = StudentData.Faker.Generate();
+
+        var request = new { studentData.Email, studentData.Handle };
+
+        //Act
+        var response = await Client.PutAsJsonAsync($"students/some-other-{studentData.Handle}", request);
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        problemDetails?.Title.Should().Be(StudentsErrors.HandlesDoesNotMatch.Description);
+
+        var dbStudent = await StudentsRepository.GetByEmail(Email.Create(studentData.Email!));
+        dbStudent.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ShouldReturnBadRequestWithProblemDetails_WhenEmailIsInvalid()
     {
         // Arrange
         var studentData = StudentData.Faker.Generate() with { Email = "invalidEmail" };
@@ -85,5 +106,23 @@ public class UpdateOrCreateStudentTests(IntegrationTestWebAppFactory factory)
 
         var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         problemDetails?.Title.Should().Be(StudentsErrors.InvalidEmail.Description);
+    }
+
+    [Fact]
+    public async Task ShouldReturnBadRequestWithProblemDetails_WhenHandleIsInvalid()
+    {
+        // Arrange
+        var studentData = StudentData.Faker.Generate() with { Handle = "invalid-handle" };
+
+        var request = new { studentData.Email, studentData.Handle };
+
+        //Act
+        var response = await Client.PutAsJsonAsync($"students/{studentData.Handle}", request);
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        problemDetails?.Title.Should().Be(StudentsErrors.InvalidHandle.Description);
     }
 }

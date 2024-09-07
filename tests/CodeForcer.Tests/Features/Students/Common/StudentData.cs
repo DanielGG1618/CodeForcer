@@ -1,5 +1,5 @@
-using CodeForcer.Backend.Features.Students.Common.Models;
-using EmailType = CodeForcer.Backend.Features.Students.Common.Models.Email;
+using CodeForcer.Features.Students.Common.Models;
+using EmailType = CodeForcer.Features.Students.Common.Models.Email;
 
 namespace CodeForcer.Tests.Features.Students.Common;
 
@@ -13,5 +13,11 @@ public sealed record StudentData(string? Email, string Handle)
             );
 
     public static Faker<StudentData> Faker { get; } = new Faker<StudentData>()
-        .CustomInstantiator(fake => new(fake.Person.Email, fake.Person.FirstName));
+        .CustomInstantiator(fake =>
+            {
+                var fakeHandle = fake.Person.FirstName;
+                FakeHandleValidator.ValidHandles.Add(fakeHandle);
+                return new(fake.Person.Email, fakeHandle);
+            }
+        );
 }

@@ -1,5 +1,5 @@
-using CodeForcer.Backend.Features.Students.Common;
-using CodeForcer.Backend.Features.Students.Common.Models;
+using CodeForcer.Features.Students.Common;
+using CodeForcer.Features.Students.Common.Models;
 using CodeForcer.Tests.Features.Students.Common;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,5 +44,19 @@ public class CreateStudentTests(IntegrationTestWebAppFactory factory)
         problemDetails?.Title.Should().Be(StudentsErrors.InvalidEmail.Description);
     }
 
-    //TODO add handle validation
+    [Fact]
+    public async Task ShouldReturnBadRequestWithProblemDetails_WhenHandleIsInvalid()
+    {
+        //Arrange
+        var student = StudentData.Faker.Generate() with { Handle = "invalid-handle" };
+        var request = new { student.Email, student.Handle };
+
+        //Act
+        var response = await Client.PostAsJsonAsync("/students", request);
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        problemDetails?.Title.Should().Be(StudentsErrors.InvalidHandle.Description);
+    }
 }

@@ -24,11 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\CodeForcer.Backend\CodeForcer.Backend.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Common\DataGeneration\"/>
+        <ProjectReference Include="..\..\src\CodeForcer\CodeForcer.csproj"/>
     </ItemGroup>
 
 </Project>

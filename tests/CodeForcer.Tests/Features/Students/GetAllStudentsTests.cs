@@ -1,5 +1,4 @@
 using CodeForcer.Tests.Features.Students.Common;
-using Xunit.Abstractions;
 
 namespace CodeForcer.Tests.Features.Students;
 
@@ -26,9 +25,7 @@ public class GetAllStudentsTests(IntegrationTestWebAppFactory factory)
     {
         //Arrange
         var studentDatas = StudentData.Faker.GenerateBetween(3, 52);
-
-        foreach (var student in studentDatas.ToDomain())
-            await StudentsRepository.Add(student);
+        await StudentsRepository.AddRange(studentDatas.ToDomain());
 
         //Act
         var response = await Client.GetAsync("/students");
